@@ -1,0 +1,46 @@
+/* Empty. Add your own CSS if you like */
+.full-screen-pane {
+  position: absolute;
+  background-color: #00aff0;
+  z-index: 10 !important;
+}
+
+.login-form {
+  width: 80%;
+  margin: auto;
+}
+.login-form .item {
+  margin-bottom: 5px;
+}
+
+.login-submit {
+  width: 81%;
+  margin: auto;
+  margin-top: 10px;
+}
+
+.app-logo {
+  width: 50%;
+  height: 50%;
+  margin-bottom: 25px;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.button-login {
+  border: none;
+}
+
+.text-error {
+  color: #ff0000;
+}
+
+.menu-custom .item {
+  font-size: 18pt;
+}
+
+.menu-custom .item > i {
+  margin-right: 10px;
+}

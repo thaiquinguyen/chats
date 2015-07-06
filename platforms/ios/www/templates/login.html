@@ -1,0 +1,19 @@
+<ion-view class="full-screen-pane">
+  <ion-content>
+    <div class="content has-header align-center">
+      <img src="img/talking.png" class="app-logo">
+      <div class="list login-form" ng-hide="{{ authenticating }}">
+        <p class="text-error">{{ errorMsg }}</p>
+        <label class="item item-input">
+          <input type="text" placeholder="Username" ng-model="user.username">
+        </label>
+        <label class="item item-input">
+          <input type="password" placeholder="Password" ng-model="user.password">
+        </label>
+      </div>
+      <div class="login-submit">
+        <button class="button button-block button-login button-positive" ng-click="login()">Login</button>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
