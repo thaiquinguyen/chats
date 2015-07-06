@@ -1,11 +1,13 @@
 angular.module('starter.controllers', [])
 
-.controller('LoginCtrl', function($scope, $state, $stateParams, Auth) {
+.controller('LoginCtrl', function($scope, $state, $ionicSideMenuDelegate, $stateParams, Auth) {
   $scope.user = {};
 
   // if($stateParams.params.message) {
   //   $state.errorMsg = $stateParams.params.message;
   // }
+
+  $ionicSideMenuDelegate.canDragContent(false);
 
   $scope.login = function() {
     var promise = Auth.authentication($scope.user);
@@ -21,11 +23,13 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope) {
 })
 
-.controller('ProfileCtrl', function($scope, Socket) {
+.controller('ProfileCtrl', function($scope, $cookies, Socket) {
   var sio = Socket.get();
 
   $scope.logOut = function() {
     sio.socket.disconnect();
+    delete $cookies.accountUsername;
+    delete $cookies.accountPassword;
   };
 })
 

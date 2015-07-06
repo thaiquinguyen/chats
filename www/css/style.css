@@ -38,9 +38,33 @@
 }
 
 .menu-custom .item {
-  font-size: 18pt;
+  font-size: 14pt;
 }
 
 .menu-custom .item > i {
   margin-right: 10px;
+}
+
+.profile-box {
+  padding: 15px;
+}
+.profile-box .avatar, .profile-box .info {
+  float: left;
+}
+.profile-box .info .title {
+  font-size: 13pt;
+  font-weight: bold;
+}
+.profile-box .info .status-message {
+  font-size: 9pt;
+  font-style: italic;
+}
+.profile-box .avatar .image-avatar {
+  max-height: 48px !important;
+  max-width: 48px !important;
+  padding: 5px;
+  border: 2px solid #9c9c9c;
+}
+.clearfix {
+  clear: both;
 }

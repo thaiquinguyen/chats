@@ -7,6 +7,8 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'ngCookies', 'starter.controllers', 'starter.services'])
 
+.value('serverPath', 'http://localhost:3000/')
+
 .run(function($ionicPlatform, $state, $rootScope, $cookies, Auth, Socket) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -19,26 +21,35 @@ angular.module('starter', ['ionic', 'ngCookies', 'starter.controllers', 'starter
       StatusBar.styleLightContent();
     }
 
-    // $rootScope.$on('$stateChangeStart',function(event, toState, toParams, fromState, fromParams){
-      if($state.name !== 'login' && !Socket.io) {
-        var userUsername = $cookies.accountUsername,
-            userPassword = $cookies.accountPassword;
+    var userUsername = $cookies.accountUsername,
+        userPassword = $cookies.accountPassword;
 
-        if(userUsername && userPassword) {
-          var promise = Auth.authentication({
-            username: userUsername,
-            password: userPassword
-          });
+    if(!userUsername || !userPassword) {
+      $state.go('login');
+    }
 
-          promise.then(function(message) {
-            $state.go('tab.dash');
-          }, function(error) {
-            $state.go('login');
-          });
-        }
-        $state.go('login');
+    var checkAuth = function(successPage, errorPage) {
+      var promise = Auth.authentication({
+        username: userUsername,
+        password: userPassword
+      });
+
+      promise.then(function(message) {
+        $state.go(successPage);
+      }, function(error) {
+        $state.go(errorPage);
+      });
+    }
+
+    if(!Socket.get().socket) {
+      checkAuth('tab.dash', 'login');
+    }
+
+    $rootScope.$on('$stateChangeStart',function(event, toState){
+      if(toState.name !== 'login' && !Socket.get().socket) {
+        checkAuth(toState.name, 'login');
       }
-    // });
+    });
   });
 })
 

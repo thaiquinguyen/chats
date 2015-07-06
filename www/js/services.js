@@ -49,8 +49,7 @@ angular.module('starter.services', ['ngCookies'])
   };
 })
 
-.factory('Socket', function($q, $state, $cookies) {
-  var serverPath = 'http://192.168.1.10:3000/';
+.factory('Socket', function($q, $state, serverPath) {
   var sio = {};
   return {
     connect: function(token) {
@@ -62,8 +61,7 @@ angular.module('starter.services', ['ngCookies'])
         if(sio.socket) {
           sio.socket.on('disconnect', function(){
             $state.go('login');
-            delete $cookies.accountUsername;
-            delete $cookies.accountPassword;
+            delete sio.socket;
           });
           resolve('The socket has connected!')
         }
@@ -78,8 +76,7 @@ angular.module('starter.services', ['ngCookies'])
   };
 })
 
-.factory('Auth', function($q, $http, $cookies, Socket) {
-  var serverPath = 'http://192.168.1.10:3000/';
+.factory('Auth', function($q, $http, $cookies, $rootScope, Socket, serverPath) {
   return {
     authentication: function(user) {
       return $q(function(resolve, reject) {
@@ -97,15 +94,17 @@ angular.module('starter.services', ['ngCookies'])
             if(data.status === 'Success') {
               var promise = Socket.connect(data.token);
               promise.then(function() {
+                $rootScope.userProfile = data.userProfile;
                 // Setting a cookie
-                $cookies.accountUsername = data.userProfile.username;
-                $cookies.accountPassword = data.userProfile.password;
+                $cookies.accountUsername = user.username;
+                $cookies.accountPassword = user.password;
                 resolve('Authentication done!')
               }, function() {
                 reject('Authentication fail!');
               });
             }
             else if(data.status === 'Fail') {
+              console.log(data.message);
                reject(data.message);
             }
           }).error(function(data, status, headers, config) {});

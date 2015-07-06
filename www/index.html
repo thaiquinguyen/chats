@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -20,7 +19,7 @@
     <script src="cordova.js"></script>
 
     <script src="lib/socket.io-client/socket.io.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
@@ -47,13 +46,25 @@
 
       <ion-side-menu side="left" ng-controller="ProfileCtrl">
         <ion-header-bar class="bar-assertive">
-          <h1 class="title">Left Menu</h1>
+          <h1 class="title text-center">Profile</h1>
         </ion-header-bar>
         <ion-content>
+          <div class="profile-box">
+            <div class="avatar">
+              <a class="item-avatar" href="#">
+                <img ng-src="{{ userProfile.avatar || 'img/no-avatar.png' }}" class="image-avatar">
+              </a>
+            </div>
+            <div class="info">
+              <p class="title">{{ userProfile.firstName + ' ' + userProfile.lastName }}</p>
+              <p class="status-message">{{ userProfile.statusMessage }}</p>
+            </div>
+            <div class="clearfix"></div>
+          </div>
           <ul class="list menu-custom">
             <!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
-            <a href="#/event/check-in" class="item" menu-close>Check-in</a>
-            <a href="#" class="item item-menu-custom" ng-click="logOut()" menu-close><i class="ion-log-out"></i>Logout</a>
+             <a href="#/tab/account" class="item item-menu-custom" menu-close><i class="ion-gear-b"></i>Settings</a>
+            <a href="#" class="item item-menu-custom" ng-click="logOut()" menu-close><i class="ion-power"></i>Logout</a>
           </ul>
         </ion-content>
       </ion-side-menu>
