@@ -21,17 +21,13 @@ angular.module('starter', ['ionic', 'ngCookies', 'starter.controllers', 'starter
       StatusBar.styleLightContent();
     }
 
-    var userUsername = $cookies.accountUsername,
-        userPassword = $cookies.accountPassword;
-
-    if(!userUsername || !userPassword) {
-      $state.go('login');
-    }
+    var accountUsername = $cookies.accountUsername,
+        accountPassword = $cookies.accountPassword;
 
     var checkAuth = function(successPage, errorPage) {
       var promise = Auth.authentication({
-        username: userUsername,
-        password: userPassword
+        username: accountUsername,
+        password: accountPassword
       });
 
       promise.then(function(message) {
@@ -39,9 +35,12 @@ angular.module('starter', ['ionic', 'ngCookies', 'starter.controllers', 'starter
       }, function(error) {
         $state.go(errorPage);
       });
-    }
+    };
 
-    if(!Socket.get().socket) {
+    if(!accountUsername || !accountPassword) {
+      $state.go('login');
+    }
+    else if(!Socket.get().socket) {
       checkAuth('tab.dash', 'login');
     }
 
@@ -100,12 +99,22 @@ angular.module('starter', ['ionic', 'ngCookies', 'starter.controllers', 'starter
       }
     })
 
-  .state('tab.account', {
-    url: '/account',
+  .state('tab.group', {
+    url: '/group',
     views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
+      'tab-group': {
+        templateUrl: 'templates/tab-group.html',
+        controller: 'GroupCtrl'
+      }
+    }
+  })
+
+  .state('tab.contacts', {
+    url: '/contacts',
+    views: {
+      'tab-contacts': {
+        templateUrl: 'templates/tab-contacts.html',
+        controller: 'ContactsCtrl'
       }
     }
   })

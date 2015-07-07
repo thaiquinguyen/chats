@@ -1,11 +1,7 @@
 angular.module('starter.controllers', [])
 
-.controller('LoginCtrl', function($scope, $state, $ionicSideMenuDelegate, $stateParams, Auth) {
+.controller('LoginCtrl', function($scope, $state, $ionicSideMenuDelegate, Auth) {
   $scope.user = {};
-
-  // if($stateParams.params.message) {
-  //   $state.errorMsg = $stateParams.params.message;
-  // }
 
   $ionicSideMenuDelegate.canDragContent(false);
 
@@ -16,11 +12,8 @@ angular.module('starter.controllers', [])
       $state.go('tab.dash');
     }, function(error) {
       $scope.errorMsg = error;
-    })
+    });
   };
-})
-
-.controller('DashCtrl', function($scope) {
 })
 
 .controller('ProfileCtrl', function($scope, $cookies, Socket) {
@@ -33,20 +26,12 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('ChatsCtrl', function($scope, $ionicPopup, Chats, Socket) {
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
-})
+.controller('DashCtrl', function() {})
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-  // An elaborate, custom popup
-})
+.controller('ChatsCtrl', function() {})
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-});
+.controller('ChatDetailCtrl', function() {})
+
+.controller('ContactsCtrl', function() {})
+
+.controller('GroupCtrl', function() {});

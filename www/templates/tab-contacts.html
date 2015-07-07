@@ -1,0 +1,32 @@
+<ion-view view-title="Contacts">
+  <ion-content>
+    <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe">
+      <ion-item ng-repeat="item in userProfile.contacts | orderObjectBy:'status':true" class="contact-box contact-box-1">
+        <a href="/#/tab/chat-details/{{ item.username }}" class="item-link">
+          <div class="item-left">
+            <img ng-src="{{item.avatar || 'img/no-avatar.png'}}">
+          </div>
+          <div class="item-right">
+            <h2 class="item-name">{{item.firstName + ' ' + item.lastName}}</h2>
+            <div class="item-status" ng-show="item.status"><img src="img/online.png"><span> Online</span></div>
+          </div>
+        </a>
+        <ion-option-button class="button-positive"
+                           ng-click="share(item)">
+          Share
+        </ion-option-button>
+        <ion-option-button class="button-info"
+                           ng-click="edit(item)">
+          Edit
+        </ion-option-button>
+        <ion-delete-button class="ion-minus-circled"
+                           ng-click="items.splice($index, 1)">
+        </ion-delete-button>
+        <ion-reorder-button class="ion-navicon"
+                            on-reorder="reorderItem(item, $fromIndex, $toIndex)">
+        </ion-reorder-button>
+
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

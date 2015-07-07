@@ -1,55 +1,6 @@
 angular.module('starter.services', ['ngCookies'])
 
-.factory('Chats', function() {
-  // Might use a resource here that returns a JSON array
-
-  // Some fake testing data
-  var chats = [{
-    id: 0,
-    name: 'Ben Sparrow',
-    lastText: 'You on your way?',
-    face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
-  }, {
-    id: 1,
-    name: 'Max Lynx',
-    lastText: 'Hey, it\'s me',
-    face: 'https://avatars3.githubusercontent.com/u/11214?v=3&s=460'
-  },{
-    id: 2,
-    name: 'Adam Bradleyson',
-    lastText: 'I should buy a boat',
-    face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
-  }, {
-    id: 3,
-    name: 'Perry Governor',
-    lastText: 'Look at my mukluks!',
-    face: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png'
-  }, {
-    id: 4,
-    name: 'Mike Harrington',
-    lastText: 'This is wicked good ice cream.',
-    face: 'https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png'
-  }];
-
-  return {
-    all: function() {
-      return chats;
-    },
-    remove: function(chat) {
-      chats.splice(chats.indexOf(chat), 1);
-    },
-    get: function(chatId) {
-      for (var i = 0; i < chats.length; i++) {
-        if (chats[i].id === parseInt(chatId)) {
-          return chats[i];
-        }
-      }
-      return null;
-    }
-  };
-})
-
-.factory('Socket', function($q, $state, serverPath) {
+.factory('Socket', function($q, $rootScope, $state, serverPath) {
   var sio = {};
   return {
     connect: function(token) {
@@ -62,6 +13,16 @@ angular.module('starter.services', ['ngCookies'])
           sio.socket.on('disconnect', function(){
             $state.go('login');
             delete sio.socket;
+          });
+          sio.socket.on('A user has disconnected', function(data) {
+            $rootScope.$apply(function() {
+              $rootScope.userProfile.contacts[data.username].status = 0;
+            });
+          });
+          sio.socket.on('A user has connected', function(data) {
+            $rootScope.$apply(function() {
+              $rootScope.userProfile.contacts[data.username].status = 1;
+            });
           });
           resolve('The socket has connected!')
         }
@@ -76,9 +37,20 @@ angular.module('starter.services', ['ngCookies'])
   };
 })
 
-.factory('Auth', function($q, $http, $cookies, $rootScope, Socket, serverPath) {
+.factory('Auth', function($q, $http, $cookies, $timeout, $rootScope, Socket, serverPath) {
+  $rootScope.authenticating = false;
+
+  var authenticated = function(fn) {
+    $timeout(function() {
+      $rootScope.authenticating = false;
+      fn();
+    }, 1000);
+  };
+
   return {
     authentication: function(user) {
+      $rootScope.authenticating = true;
+
       return $q(function(resolve, reject) {
         $http({
           url: serverPath + 'auth',
@@ -91,24 +63,44 @@ angular.module('starter.services', ['ngCookies'])
             "Content-Type": "application/json"
           }
         }).success(function(data) {
-            if(data.status === 'Success') {
-              var promise = Socket.connect(data.token);
-              promise.then(function() {
-                $rootScope.userProfile = data.userProfile;
-                // Setting a cookie
-                $cookies.accountUsername = user.username;
-                $cookies.accountPassword = user.password;
-                resolve('Authentication done!')
-              }, function() {
+          if(data.status === 'Success') {
+            var promise = Socket.connect(data.token);
+
+            promise.then(function() {
+              $rootScope.userProfile = data.userProfile;
+              $cookies.accountUsername = user.username;
+              $cookies.accountPassword = user.password;
+
+              authenticated(function() {
+                resolve('Authentication done!');
+              });
+            }, function() {
+              authenticated(function() {
                 reject('Authentication fail!');
               });
-            }
-            else if(data.status === 'Fail') {
-              console.log(data.message);
-               reject(data.message);
-            }
-          }).error(function(data, status, headers, config) {});
+            });
+          }
+          else if(data.status === 'Fail') {
+            authenticated(function() {
+              reject(data.message);
+            });
+          }
+        });
       });
     },
+  };
+})
+
+.filter('orderObjectBy', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
   };
 });

@@ -4,7 +4,6 @@
   background-color: #00aff0;
   z-index: 10 !important;
 }
-
 .login-form {
   width: 80%;
   margin: auto;
@@ -12,39 +11,31 @@
 .login-form .item {
   margin-bottom: 5px;
 }
-
 .login-submit {
   width: 81%;
   margin: auto;
   margin-top: 10px;
 }
-
 .app-logo {
   width: 50%;
   height: 50%;
   margin-bottom: 25px;
 }
-
 .align-center {
   text-align: center;
 }
-
 .button-login {
   border: none;
 }
-
 .text-error {
   color: #ff0000;
 }
-
 .menu-custom .item {
   font-size: 14pt;
 }
-
 .menu-custom .item > i {
   margin-right: 10px;
 }
-
 .profile-box {
   padding: 15px;
 }
@@ -67,4 +58,49 @@
 }
 .clearfix {
   clear: both;
+}
+.auth-process .spinner svg {
+  width: 48px;
+  height: 48px;
+  stroke: #444;
+  fill: #fff;
+}
+.auth-process .auth-process-message{
+  color: #fff;
+}
+.contact-box-1 {
+  height: 70px;
+}
+.contact-box .item-content {
+  padding: 0px;
+}
+.contact-box .item-link {
+  text-decoration: none;
+  color: black;
+  display: inline-block;
+  width: 100%;
+  padding: 15px;
+}
+.contact-box .item-left {
+  display: inline-block;
+  border: 1px solid #9c9c9c;
+  border-radius: 50%;
+  padding: 2px 2px 0 2px;
+  margin-right: 10px;
+}
+.contact-box .item-left img {
+  width: 36px;
+  height: 32px;
+  border-radius: 50%;
+}
+.contact-box .item-right {
+  display: inline-block;
+  line-height: 10pt;
+}
+.contact-box .item-right h2 {
+  padding-bottom: 3px;
+}
+.contact-box .item-right .item-status span {
+  font-size: 8pt;
+  text-align: left;
 }
