@@ -32,6 +32,20 @@ angular.module('starter.controllers', [])
 
 .controller('ChatDetailCtrl', function() {})
 
-.controller('ContactsCtrl', function() {})
+.controller('ContactsCtrl', function($scope, $rootScope, Socket) {
+  var sio = Socket.get();
+
+  $scope.shouldShowDelete = false;
+
+  $scope.delete = function(key) {
+    sio.socket.emit('deleteContact', {contactKey: key});
+  };
+  $scope.showDelete = function() {
+    $scope.shouldShowDelete = true;
+  };
+  $scope.hideDelete = function() {
+    $scope.shouldShowDelete = false;
+  };
+})
 
 .controller('GroupCtrl', function() {});

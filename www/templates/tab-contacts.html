@@ -1,8 +1,22 @@
 <ion-view view-title="Contacts">
+  <ion-nav-buttons side="right">
+    <button class="button button-stable" ng-show="shouldShowDelete" ng-click="hideDelete()">
+      Cancel
+    </button>
+    <button class="button button-stable" ng-hide="shouldShowDelete">
+      <b class="ion-android-add" style="font-size:18pt"></b>
+    </button>
+  </ion-nav-buttons>
   <ion-content>
-    <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe">
-      <ion-item ng-repeat="item in userProfile.contacts | orderObjectBy:'status':true" class="contact-box contact-box-1">
-        <a href="/#/tab/chat-details/{{ item.username }}" class="item-link">
+    <div class="bar bar-header item-input-inset">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="Search" ng-model="searchText">
+      </label>
+    </div>
+    <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe = true">
+      <ion-item ng-repeat="item in userProfile.contacts | filterContact:['firstName', 'lastName']:searchText | orderObjectBy:'firstName':false" class="contact-box contact-box-1" on-hold="showDelete()">
+        <a href="#" class="item-link">
           <div class="item-left">
             <img ng-src="{{item.avatar || 'img/no-avatar.png'}}">
           </div>
@@ -11,21 +25,13 @@
             <div class="item-status" ng-show="item.status"><img src="img/online.png"><span> Online</span></div>
           </div>
         </a>
-        <ion-option-button class="button-positive"
-                           ng-click="share(item)">
-          Share
-        </ion-option-button>
-        <ion-option-button class="button-info"
-                           ng-click="edit(item)">
-          Edit
+        <ion-option-button class="button-assertive"
+                           ng-click="delete(item._id)">
+          Delete
         </ion-option-button>
         <ion-delete-button class="ion-minus-circled"
-                           ng-click="items.splice($index, 1)">
+                           ng-click="userProfile.contacts.splice($index, 1)">
         </ion-delete-button>
-        <ion-reorder-button class="ion-navicon"
-                            on-reorder="reorderItem(item, $fromIndex, $toIndex)">
-        </ion-reorder-button>
-
       </ion-item>
     </ion-list>
   </ion-content>

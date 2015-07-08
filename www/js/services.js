@@ -2,6 +2,14 @@ angular.module('starter.services', ['ngCookies'])
 
 .factory('Socket', function($q, $rootScope, $state, serverPath) {
   var sio = {};
+
+  var setStatus = function(contact, bool) {
+    if(contact) {
+      $rootScope.$apply(function() {
+        contact.status = bool;
+      });
+    }
+  };
   return {
     connect: function(token) {
       return $q(function(resolve, reject) {
@@ -15,14 +23,10 @@ angular.module('starter.services', ['ngCookies'])
             delete sio.socket;
           });
           sio.socket.on('A user has disconnected', function(data) {
-            $rootScope.$apply(function() {
-              $rootScope.userProfile.contacts[data.username].status = 0;
-            });
+            setStatus($rootScope.userProfile.contacts[data.userID], false);
           });
           sio.socket.on('A user has connected', function(data) {
-            $rootScope.$apply(function() {
-              $rootScope.userProfile.contacts[data.username].status = 1;
-            });
+            setStatus($rootScope.userProfile.contacts[data.userID], true);
           });
           resolve('The socket has connected!')
         }
@@ -101,6 +105,36 @@ angular.module('starter.services', ['ngCookies'])
       return (a[field] > b[field] ? 1 : -1);
     });
     if(reverse) filtered.reverse();
+    return filtered;
+  };
+})
+
+.filter('filterContact', function() {
+  return function(items, field, input) {
+    if(!input ) {
+      return items;
+    }
+
+    var filtered = [];
+    var regex = new RegExp('\\b' + input, 'i' );
+
+    angular.forEach(items, function(item) {
+      var fullField = '';
+
+      if(angular.isArray(field)) {
+        for(key in field) {
+          fullField += item[field[key]] + ' ';
+        }
+        fullField = fullField.trim();
+      }
+      else {
+        fullField = field;
+      }
+
+      if(regex.test(fullField)) {
+        filtered.push(item);
+      }
+    });
     return filtered;
   };
 });
