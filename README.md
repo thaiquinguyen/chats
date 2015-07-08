@@ -13,3 +13,6 @@ Version: 1.0
 - Implemented Profile Module (Side menu left).
 - Implementing Contact Module (show contact list & check online/offline for each contact).
 
+#8/7/2015
+- Add search input & delete contact button.
+- Emit to server to delete contact.
