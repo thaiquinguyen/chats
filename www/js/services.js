@@ -28,6 +28,13 @@ angular.module('starter.services', ['ngCookies'])
           sio.socket.on('A user has connected', function(data) {
             setStatus($rootScope.userProfile.contacts[data.userID], true);
           });
+          sio.socket.on('The contact has deleted', function(data) {
+            console.log(data);
+            $rootScope.$apply(function() {
+              delete $rootScope.userProfile.contacts[data.contactID];
+            });
+            console.log($rootScope.userProfile);
+          });
           resolve('The socket has connected!')
         }
         else {
