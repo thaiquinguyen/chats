@@ -16,3 +16,8 @@ Version: 1.0
 #8/7/2015
 - Add search input & delete contact button.
 - Emit to server to delete contact.
+
+#10/7/2015
+- Refactor Project Structure.
+- Design Modal: Add New Contact & Show Detail Contact.
+- Done Function: delete contact.
