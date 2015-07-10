@@ -1,15 +1,29 @@
 angular.module('starter.services', ['ngCookies'])
 
-.factory('Socket', function($q, $rootScope, $state, serverPath) {
-  var sio = {};
+.factory('Contacts', function() {
+  var contacts = {};
 
-  var setStatus = function(contact, bool) {
-    if(contact) {
-      $rootScope.$apply(function() {
+  return {
+    all: function() {
+      return contacts;
+    },
+    addContacts: function(contactList) {
+      contacts = contactList;
+    },
+    setStatus: function(contactId, bool) {
+      var contact = contacts[contactId]
+      if(contact) {
         contact.status = bool;
-      });
-    }
-  };
+      }
+    },
+    remove: function(contactId) {
+      delete contacts[contactId];
+    },
+  }
+})
+
+.factory('Socket', function($q, $rootScope, $state, serverPath, Contacts) {
+  var sio = {};
   return {
     connect: function(token) {
       return $q(function(resolve, reject) {
@@ -17,29 +31,31 @@ angular.module('starter.services', ['ngCookies'])
           query: 'token=' + token,
           'force new connection': true
         });
-        if(sio.socket) {
+
+        sio.socket.on('connect', function () {
           sio.socket.on('disconnect', function(){
-            $state.go('login');
             delete sio.socket;
+            $state.go('login');
           });
           sio.socket.on('A user has disconnected', function(data) {
-            setStatus($rootScope.userProfile.contacts[data.userID], false);
+            Contacts.setStatus(data.userId, false);
           });
           sio.socket.on('A user has connected', function(data) {
-            setStatus($rootScope.userProfile.contacts[data.userID], true);
+            Contacts.setStatus(data.userId, true);
+          });
+          sio.socket.on('Socket is connected', function(data) {
+            resolve(data);
           });
           sio.socket.on('The contact has deleted', function(data) {
-            console.log(data);
             $rootScope.$apply(function() {
-              delete $rootScope.userProfile.contacts[data.contactID];
+              Contacts.remove(data.contactId);
             });
-            console.log($rootScope.userProfile);
           });
-          resolve('The socket has connected!')
-        }
-        else {
+        });
+
+        sio.socket.on('error', function (data) {
           reject('The socket has not connected!');
-        }
+        });
       });
     },
     get: function() {
@@ -48,7 +64,7 @@ angular.module('starter.services', ['ngCookies'])
   };
 })
 
-.factory('Auth', function($q, $http, $cookies, $timeout, $rootScope, Socket, serverPath) {
+.factory('Auth', function($q, $http, $cookies, $timeout, $rootScope, Socket, serverPath, Contacts) {
   $rootScope.authenticating = false;
 
   var authenticated = function(fn) {
@@ -64,7 +80,7 @@ angular.module('starter.services', ['ngCookies'])
 
       return $q(function(resolve, reject) {
         $http({
-          url: serverPath + 'auth',
+          url: serverPath + 'api/auth',
           method: 'POST',
           data: {
             username: user.username,
@@ -77,8 +93,11 @@ angular.module('starter.services', ['ngCookies'])
           if(data.status === 'Success') {
             var promise = Socket.connect(data.token);
 
-            promise.then(function() {
-              $rootScope.userProfile = data.userProfile;
+            promise.then(function(result) {
+              $rootScope.userProfile = result;
+
+              Contacts.addContacts(result.contacts);
+
               $cookies.accountUsername = user.username;
               $cookies.accountPassword = user.password;
 
@@ -102,46 +121,35 @@ angular.module('starter.services', ['ngCookies'])
   };
 })
 
-.filter('orderObjectBy', function() {
-  return function(items, field, reverse) {
-    var filtered = [];
-    angular.forEach(items, function(item) {
-      filtered.push(item);
-    });
-    filtered.sort(function (a, b) {
-      return (a[field] > b[field] ? 1 : -1);
-    });
-    if(reverse) filtered.reverse();
-    return filtered;
-  };
-})
+.service('Modal', function($q, $ionicModal) {
+  // var bindHandler = function(scope) {
+  //       //Cleanup the modal when we're done with it!
+  //   scope.$on('$destroy', function() {
+  //     $scope.modal.remove();
+  //   });
+  //   // Execute action on hide modal
+  //   scope.$on('modal.hidden', function() {
+  //     // Execute action
+  //   });
+  //   // Execute action on remove modal
+  //   scope.$on('modal.removed', function() {
+  //     // Execute action
+  //   });
+  // };
 
-.filter('filterContact', function() {
-  return function(items, field, input) {
-    if(!input ) {
-      return items;
-    }
-
-    var filtered = [];
-    var regex = new RegExp('\\b' + input, 'i' );
-
-    angular.forEach(items, function(item) {
-      var fullField = '';
-
-      if(angular.isArray(field)) {
-        for(key in field) {
-          fullField += item[field[key]] + ' ';
+  this.createModal = function(scope, templateUrl, animation) {
+    return $q(function(resolve, reject) {
+      $ionicModal.fromTemplateUrl(templateUrl, {
+        scope: scope,
+        animation: animation
+      }).then(function(modal) {
+        if(modal) {
+          resolve(modal);
         }
-        fullField = fullField.trim();
-      }
-      else {
-        fullField = field;
-      }
-
-      if(regex.test(fullField)) {
-        filtered.push(item);
-      }
+        else {
+          reject('Create modal is fail!');
+        }
+      });
     });
-    return filtered;
   };
 });

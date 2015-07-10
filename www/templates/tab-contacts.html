@@ -1,9 +1,9 @@
 <ion-view view-title="Contacts">
   <ion-nav-buttons side="right">
-    <button class="button button-stable" ng-show="shouldShowDelete" ng-click="hideDelete()">
+    <button class="button" ng-show="shouldShowDelete" ng-click="hideDelete()">
       Cancel
     </button>
-    <button class="button button-stable" ng-hide="shouldShowDelete">
+    <button class="button" ng-hide="shouldShowDelete" ng-click="openAddNewContactModal()">
       <b class="ion-android-add" style="font-size:18pt"></b>
     </button>
   </ion-nav-buttons>
@@ -15,22 +15,22 @@
       </label>
     </div>
     <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe = true">
-      <ion-item ng-repeat="item in userProfile.contacts | filterContact:['firstName', 'lastName']:searchText | orderObjectBy:'firstName':false" class="contact-box contact-box-1" on-hold="showDelete()">
+      <ion-item ng-repeat="item in contacts | filterContact:['firstName', 'lastName']:searchText | orderObjectBy:'firstName':false" class="contact-box contact-box-1" on-hold="showDelete()" ng-click="showContactDetail(item)">
         <a href="#" class="item-link">
           <div class="item-left">
             <img ng-src="{{item.avatar || 'img/no-avatar.png'}}">
           </div>
           <div class="item-right">
-            <h2 class="item-name">{{item.firstName + ' ' + item.lastName}}</h2>
+            <h2 class="item-name">{{item.firstName + ' ' + item.lastName}} <span class="font-1">({{item.username}})</span></h2>
             <div class="item-status" ng-show="item.status"><img src="img/online.png"><span> Online</span></div>
           </div>
         </a>
         <ion-option-button class="button-assertive"
-                           ng-click="delete(item._id)">
+                           ng-click="showConfirm(item._id)">
           Delete
         </ion-option-button>
         <ion-delete-button class="ion-minus-circled"
-                           ng-click="userProfile.contacts.splice($index, 1)">
+                           ng-click="deleteContact(item._id)">
         </ion-delete-button>
       </ion-item>
     </ion-list>

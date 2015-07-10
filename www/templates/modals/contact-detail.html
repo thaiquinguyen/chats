@@ -1,0 +1,33 @@
+<ion-modal-view class="modal modal-1">
+  <button class="button button-fixed" ng-click="contactDetailModal.hide()">Cancel</button>
+  <ion-content class="contact-detail-wrapper">
+    <img class="avatar" ng-src="{{ contact.avatar }}">
+    <h4 class="title">{{contact.firstName + ' ' + contact.lastName}}</h4>
+    <span class="font-1">({{contact.username}})</span>
+    <div class="list">
+      <a class="item item-icon-left" href="#">
+        <i class="icon ion-email"></i>
+        {{ contact.email }}
+      </a>
+
+      <a class="item item-icon-left item-icon-right" href="#">
+        <i class="icon ion-chatbubble-working"></i>
+        +84 1223330004
+        <i class="icon ion-ios-telephone-outline"></i>
+      </a>
+
+    </div>
+
+    <button class="button button-positive">
+      Chat
+    </button>
+
+    <button class="button button-dark">
+      Chat Voice
+    </button>
+
+    <button class="button button-dark">
+      Call Video
+    </button>
+  </ion-content>
+</ion-modal-view>
