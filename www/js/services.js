@@ -22,7 +22,8 @@ angular.module('starter.services', ['ngCookies'])
   }
 })
 
-.factory('Socket', function($q, $rootScope, $state, serverPath, Contacts) {
+.factory('Socket', function($q, $rootScope, $state, $ionicSideMenuDelegate,
+                              serverPath, Contacts, Modal) {
   var sio = {};
   return {
     connect: function(token) {
@@ -35,6 +36,8 @@ angular.module('starter.services', ['ngCookies'])
         sio.socket.on('connect', function () {
           sio.socket.on('disconnect', function(){
             delete sio.socket;
+            Modal.clearAll();
+            $ionicSideMenuDelegate.toggleLeft(false);
             $state.go('login');
           });
           sio.socket.on('A user has disconnected', function(data) {
@@ -45,6 +48,9 @@ angular.module('starter.services', ['ngCookies'])
           });
           sio.socket.on('Socket is connected', function(data) {
             resolve(data);
+          });
+          sio.socket.on('Have a suggest add contact', function(data) {
+            Contacts.add(data);
           });
           sio.socket.on('The contact has deleted', function(data) {
             $rootScope.$apply(function() {
@@ -122,29 +128,32 @@ angular.module('starter.services', ['ngCookies'])
 })
 
 .service('Modal', function($q, $ionicModal) {
-  // var bindHandler = function(scope) {
-  //       //Cleanup the modal when we're done with it!
-  //   scope.$on('$destroy', function() {
-  //     $scope.modal.remove();
-  //   });
-  //   // Execute action on hide modal
-  //   scope.$on('modal.hidden', function() {
-  //     // Execute action
-  //   });
-  //   // Execute action on remove modal
-  //   scope.$on('modal.removed', function() {
-  //     // Execute action
-  //   });
-  // };
+  var that = this;
 
-  this.createModal = function(scope, templateUrl, animation) {
+  that.modals = {};
+
+  that.clearAll = function() {
+    for(key in this.modals) {
+      this.modals[key].hide();
+      delete this.modals[key];
+    }
+  };
+
+  that.getModal = function(modalName) {
+    return that.modals[modalName];
+  };
+
+  that.createModal = function(scope, modalName, templateUrl, animation) {
     return $q(function(resolve, reject) {
       $ionicModal.fromTemplateUrl(templateUrl, {
         scope: scope,
         animation: animation
       }).then(function(modal) {
         if(modal) {
-          resolve(modal);
+          if(!that.modals[modalName]) {
+            that.modals[modalName] = modal;
+          }
+          resolve('Create modal is success!');
         }
         else {
           reject('Create modal is fail!');

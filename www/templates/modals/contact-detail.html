@@ -1,7 +1,7 @@
 <ion-modal-view class="modal modal-1">
   <button class="button button-fixed" ng-click="contactDetailModal.hide()">Cancel</button>
   <ion-content class="contact-detail-wrapper">
-    <img class="avatar" ng-src="{{ contact.avatar }}">
+    <img class="avatar" ng-src="{{ contact.avatar || 'img/no-avatar.png' }}">
     <h4 class="title">{{contact.firstName + ' ' + contact.lastName}}</h4>
     <span class="font-1">({{contact.username}})</span>
     <div class="list">

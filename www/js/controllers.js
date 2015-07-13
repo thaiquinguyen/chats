@@ -67,30 +67,83 @@ angular.module('starter.controllers', [])
   $scope.showDelete = function() {
     $scope.shouldShowDelete = true;
   };
+
   $scope.hideDelete = function() {
     $scope.shouldShowDelete = false;
   };
 
-  var promise = Modal.createModal($scope, 'templates/modals/contact-detail.html', 'fade-in');
-  promise.then(function(modal) {
-    $scope.showContactDetail = function(contact) {
-      $scope.contact = contact;
-      $scope.contactDetailModal = modal;
-      modal.show();
-    };
-  }, function(error) {
-    console.log(error);
-  });
+  $scope.addContact = function(contactId) {
+    $scope.data = {}
 
-  promise = Modal.createModal($scope, 'templates/modals/add-new-contact.html', 'fade-in');
-  promise.then(function(modal) {
-    $scope.openAddNewContactModal = function() {
-      $scope.newContactModal = modal;
-      modal.show();
-    };
-  }, function(error) {
-    console.log(error);
-  });
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      template: '<input type="text" ng-model="data.message">',
+      title: 'Send a message for them',
+      subTitle: 'Please use normal things',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: '<b>Add</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            return $scope.data.message;
+          }
+        }
+      ]
+    });
+    myPopup.then(function(res) {
+      sio.socket.emit('Add new contact', { contactId: contactId, message: res});
+      sio.socket.on('Add new contact is success', function(data) {
+        $rootScope.$apply(function() {
+          console.log(data);
+          Contacts.addContacts(data);
+        });
+      });
+    });
+  };
+
+  $scope.searchInDirectory = function(text) {
+    if(text) {
+      sio.socket.emit('Search contacts', { searchText: text});
+      sio.socket.on('Get search contacts', function(data) {
+        $scope.$apply(function() {
+          $scope.newContacts = data;
+        });
+      });
+    }
+    else {
+      $scope.newContacts = [];
+    }
+  };
+
+  $scope.showContactDetail = function(contact) {
+    var promise = Modal.createModal($scope, 'contactDetailModal',
+                                      'templates/modals/contact-detail.html', 'fade-in');
+    promise.then(function(data) {
+      $scope.contact = contact;
+      $scope.contactDetailModal = Modal.getModal('contactDetailModal');
+      $scope.contactDetailModal.show();
+    }, function(error) {
+      console.log(error);
+    });
+  };
+
+  $scope.openAddNewContactModal = function() {
+    promise = Modal.createModal($scope, 'newContactModal',
+                                  'templates/modals/add-to-contact.html', 'fade-in');
+    promise.then(function(data) {
+        $scope.newContactModal = Modal.getModal('newContactModal');
+        $scope.data = {};
+        $scope.$on('modal.hidden', function() {
+          $scope.data.searchText = '';
+          $scope.newContacts = [];
+        });
+        $scope.newContactModal.show();
+    }, function(error) {
+      console.log(error);
+    });
+  };
 })
 
 .controller('GroupCtrl', function() {});

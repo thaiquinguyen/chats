@@ -15,14 +15,24 @@
       </label>
     </div>
     <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe = true">
-      <ion-item ng-repeat="item in contacts | filterContact:['firstName', 'lastName']:searchText | orderObjectBy:'firstName':false" class="contact-box contact-box-1" on-hold="showDelete()" ng-click="showContactDetail(item)">
+      <ion-item ng-repeat="item in contacts |filterContact:['firstName', 'lastName']:searchText | orderObjectBy:'firstName':false" class="contact-box contact-box-1" on-hold="showDelete()" ng-click="showContactDetail(item)">
         <a href="#" class="item-link">
           <div class="item-left">
-            <img ng-src="{{item.avatar || 'img/no-avatar.png'}}">
+            <img ng-show="!item.waitAcception" ng-src="{{item.avatar || 'img/no-avatar.png'}}">
+            <img ng-show="item.waitAcception" ng-src="img/no-avatar.png">
           </div>
           <div class="item-right">
             <h2 class="item-name">{{item.firstName + ' ' + item.lastName}} <span class="font-1">({{item.username}})</span></h2>
-            <div class="item-status" ng-show="item.status"><img src="img/online.png"><span> Online</span></div>
+            <div class="item-status">
+              <div ng-show="item.status">
+                <img src="img/online.png">
+                <span> Online</span>
+              </div>
+              <div ng-show="item.waitAcception">
+                <img style="height:10px; width:10px" src="img/waiting.png">
+                <span> Waiting for acception</span>
+              </div>
+            </div>
           </div>
         </a>
         <ion-option-button class="button-assertive"
