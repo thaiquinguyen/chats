@@ -21,3 +21,7 @@ Version: 1.0
 - Refactor Project Structure.
 - Design Modal: Add New Contact & Show Detail Contact.
 - Done Function: delete contact.
+
+#13/7/2015
+- Implementing Add New Contact Module.
+- Fix bug modal & side menu
